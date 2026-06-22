@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Netflix Talent Ranker — AI Resume Screening</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/styles.css" />
+  <style>
+    :root {
+      --netflix-red: #E50914;
+      --netflix-dark: #141414;
+      --netflix-card: #1f1f1f;
+      --netflix-muted: #b3b3b3;
+    }
+    body {
+      background: var(--netflix-dark);
+      color: #fff;
+      font-family: 'Inter', system_ui, sans-serif;
+      margin: 0;
+      padding: 0;
+      line-height: 1.5;
+    }
+    header {
+      background: #000;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #333;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--netflix-red);
+    }
+    header p {
+      margin: 4px 0 0;
+      color: var(--netflix-muted);
+      font-size: 15px;
+    }
+    main {
+      max-width: 1100px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    .card {
+      background: var(--netflix-card);
+      border-radius: 12px;
+      padding: 32px;
+      margin-bottom: 24px;
+      border: 1px solid #333;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    h2 {
+      margin-top: 0;
+      font-size: 22px;
+      font-weight: 600;
+      color: #fff;
+    }
+    .hint {
+      color: var(--netflix-muted);
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+    .dropzone {
+      border: 2px dashed #555;
+      border-radius: 12px;
+      padding: 48px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: #181818;
+    }
+    .dropzone:hover, .dropzone.dragover {
+      border-color: var(--netflix-red);
+      background: #222;
+    }
+    .dropzone svg {
+      color: var(--netflix-red);
+      margin-bottom: 12px;
+    }
+    .dropzone p {
+      font-size: 18px;
+      font-weight: 500;
+      margin: 8px 0;
+    }
+    .btn {
+      padding: 12px 28px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+    }
+    .btn-primary {
+      background: var(--netflix-red);
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #f40612;
+      transform: translateY(-1px);
+    }
+    .btn-secondary {
+      background: #333;
+      color: white;
+    }
+    .btn-secondary:hover {
+      background: #444;
+    }
+    .icon-btn {
+      background: transparent;
+      border: 1px solid #555;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    .icon-btn:hover {
+      border-color: var(--netflix-red);
+      color: var(--netflix-red);
+    }
+    textarea, input[type="text"], input[type="password"] {
+      width: 100%;
+      background: #181818;
+      border: 1px solid #444;
+      color: white;
+      padding: 14px 16px;
+      border-radius: 8px;
+      font-size: 15px;
+      margin-top: 8px;
+    }
+    textarea:focus, input:focus {
+      outline: none;
+      border-color: var(--netflix-red);
+      box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.2);
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin-top: 16px;
+      color: #ddd;
+    }
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .suggestion-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .chip {
+      background: transparent;
+      border: 1px solid #555;
+      color: #fff;
+      padding: 8px 18px;
+      border-radius: 9999px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .chip:hover {
+      border-color: var(--netflix-red);
+      color: var(--netflix-red);
+    }
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .modal {
+      background: var(--netflix-card);
+      border-radius: 12px;
+      padding: 32px;
+      width: 100%;
+      max-width: 420px;
+      border: 1px solid #444;
+    }
+    .hidden {
+      display: none !important;
+    }
+    .result-meta {
+      color: var(--netflix-muted);
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Netflix Talent Ranker</h1>
+      <p>AI-powered resume screening for world-class storytelling talent</p>
+    </div>
+    <button type="button" class="icon-btn" id="settingsBtn" title="Settings">⚙ Settings</button>
+  </header>
+
+  <main>
+    <section class="card hidden" id="setupAlert">
+      <div class="alert" style="background:#2a2a2a; padding:16px; border-radius:8px; border-left:4px solid #E50914;">
+        <strong>Setup required:</strong> Click <em>Settings</em> and paste your OpenAI API key to get started.
+        <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" style="color:#E50914;">Get a key →</a>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>1. Upload Resumes</h2>
+      <p class="hint">Drag and drop or click to select PDF, Word, or text files — including scanned PDFs. Add as many candidates as you need.</p>
+      <div class="dropzone" id="dropzone">
+        <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path d="M12 16V4m0 0L8 8m4-4 4 4M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/>
+        </svg>
+        <p>Drop resumes here or click to browse</p>
+        <span style="color:#888; font-size:13px;">PDF · DOCX · TXT</span>
+      </div>
+      <input type="file" id="fileInput" multiple accept=".pdf,.docx,.doc,.txt" hidden />
+      <div class="file-list" id="fileList"></div>
+    </section>
+
+    <section class="card">
+      <h2>2. Job Description <span style="font-weight:400;color:#888">(optional)</span></h2>
+      <p class="hint">Paste the role requirements for targeted ranking, or leave blank for general professional evaluation.</p>
+      <label for="jobDescription">Job requirements</label>
+      <textarea id="jobDescription" placeholder="e.g. Senior Marketing Manager — 7+ years B2B experience, team leadership, data-driven campaign management…"></textarea>
+    </section>
+
+    <section class="card">
+      <h2>3. Analyze</h2>
+      <p class="hint">The AI recruiter will rank candidates, justify the top picks, and keep all data confidential.</p>
+      <div class="actions">
+        <button type="button" class="btn btn-primary" id="analyzeBtn" disabled>
+          Rank Candidates
+        </button>
+        <button type="button" class="btn btn-secondary" id="clearBtn">Clear All</button>
+      </div>
+    </section>
+
+    <section class="card hidden" id="resultsSection">
+      <h2>Ranking Results</h2>
+      <p class="result-meta" id="resultMeta"></p>
+      <div class="result-body" id="resultBody"></div>
+    </section>
+
+    <section class="card hidden" id="chatSection">
+      <h2>Follow-Up Questions</h2>
+      <p class="hint">Ask for candidate summaries, deeper analysis, or compare specific applicants.</p>
+      <div class="suggestion-chips">
+        <button type="button" class="chip" data-prompt="Give me a summary of the top-ranked candidate.">Summary of #1</button>
+        <button type="button" class="chip" data-prompt="What are the key skill gaps for the lowest-ranked candidate?">Skill gaps</button>
+        <button type="button" class="chip" data-prompt="Who would you recommend for a first-round interview and why?">Interview pick</button>
+      </div>
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="chat-input-row" style="display:flex; gap:12px; align-items:center; margin-top:12px;">
+        <label for="chatInput" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Follow-up question</label>
+        <input type="text" id="chatInput" placeholder="e.g. Give me a summary of Candidate B" style="flex:1;" />
+        <button type="button" class="btn btn-primary" id="chatSendBtn">Send</button>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-overlay hidden" id="settingsModal">
+    <div class="modal">
+      <h2 style="margin-top:0;">Settings</h2>
+      <p style="color:#aaa;">Enter your OpenAI API key once — the app handles all AI configuration for you.</p>
+      <label for="apiKeyInput">OpenAI API Key</label>
+      <input type="password" id="apiKeyInput" placeholder="sk-…" autocomplete="off" />
+      <label for="modelInput">Model <span style="font-weight:400;color:#888">(optional)</span></label>
+      <input type="text" id="modelInput" placeholder="gpt-4o-mini" />
+      <div class="actions">
+        <button type="button" class="btn btn-primary" id="saveSettingsBtn">Save</button>
+        <button type="button" class="btn btn-secondary" id="closeSettingsBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
