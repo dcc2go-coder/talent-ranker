@@ -24,11 +24,16 @@ let sessionId = null;
 let isConfigured = false;
 
 async function checkStatus() {
-  const res = await fetch("/api/status");
-  const data = await res.json();
-  isConfigured = data.configured;
-  setupAlert.classList.toggle("hidden", isConfigured);
-  if (data.model) modelInput.placeholder = data.model;
+  try {
+    const res = await fetch("/api/status");
+    if (!res.ok) return;
+    const data = await res.json();
+    isConfigured = data.configured;
+    setupAlert.classList.toggle("hidden", isConfigured);
+    if (data.model) modelInput.placeholder = data.model;
+  } catch {
+    // Server may not be ready yet; setup alert stays visible.
+  }
 }
 
 dropzone.addEventListener("click", () => fileInput.click());
@@ -64,21 +69,33 @@ function addFiles(files) {
 }
 
 function renderFileList() {
-  fileList.innerHTML = "";
+  fileList.replaceChildren();
   selectedFiles.forEach((f, i) => {
     const div = document.createElement("div");
     div.className = "file-item";
-    div.innerHTML = `<span>📄 ${f.name}</span>`;
+    const label = document.createElement("span");
+    label.textContent = `📄 ${f.name}`;
     const btn = document.createElement("button");
     btn.textContent = "Remove";
     btn.addEventListener("click", () => {
       selectedFiles.splice(i, 1);
       renderFileList();
     });
-    div.appendChild(btn);
+    div.append(label, btn);
     fileList.appendChild(div);
   });
   analyzeBtn.disabled = selectedFiles.length === 0;
+}
+
+function setAnalyzeLoading(loading) {
+  analyzeBtn.replaceChildren();
+  if (loading) {
+    const spinner = document.createElement("span");
+    spinner.className = "spinner";
+    analyzeBtn.append(spinner, document.createTextNode(" Analyzing…"));
+  } else {
+    analyzeBtn.textContent = "Rank Candidates";
+  }
 }
 
 clearBtn.addEventListener("click", () => {
@@ -103,7 +120,7 @@ analyzeBtn.addEventListener("click", async () => {
   form.append("job_description", jobDescription.value);
 
   analyzeBtn.disabled = true;
-  analyzeBtn.innerHTML = '<span class="spinner"></span> Analyzing…';
+  setAnalyzeLoading(true);
 
   try {
     const res = await fetch("/api/analyze", { method: "POST", body: form });
@@ -121,7 +138,7 @@ analyzeBtn.addEventListener("click", async () => {
     alert(err.message);
   } finally {
     analyzeBtn.disabled = selectedFiles.length === 0;
-    analyzeBtn.textContent = "Rank Candidates";
+    setAnalyzeLoading(false);
   }
 });
 

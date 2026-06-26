@@ -114,8 +114,10 @@ def rank_candidates(
     return assistant_message, messages
 
 
-def chat(messages: List[Dict[str, str]], user_message: str) -> Tuple[str, List[Dict[str, str]]]:
-    history = [{"role": "system", "content": CHAT_SYSTEM}]
+def chat(
+    messages: List[Dict[str, Any]], user_message: str
+) -> Tuple[str, List[Dict[str, Any]]]:
+    history: List[Dict[str, Any]] = [{"role": "system", "content": CHAT_SYSTEM}]
     for msg in messages:
         if msg["role"] in ("user", "assistant"):
             history.append({"role": msg["role"], "content": msg["content"]})

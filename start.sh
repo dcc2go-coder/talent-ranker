@@ -38,4 +38,4 @@ if [[ "$(uname)" == "Darwin" ]]; then
   (sleep 1.5 && open "http://localhost:${PORT}") &
 fi
 
-exec uvicorn app.main:app --host 0.0.0.0 --port "$PORT" --reload
+exec uvicorn app.main:app --host 127.0.0.1 --port "$PORT" --reload

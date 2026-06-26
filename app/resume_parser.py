@@ -35,9 +35,7 @@ def _extract_pdf(
     for extractor in extractors:
         try:
             text = extractor(file_path)
-        except Exception as e:
-            if isinstance(e, (KeyboardInterrupt, SystemExit)):
-                raise
+        except (ImportError, OSError, ValueError, RuntimeError):
             continue
         if len(text) > len(best):
             best = text
@@ -49,9 +47,7 @@ def _extract_pdf(
             ocr_text = pdf_ocr_fallback(file_path)
             if len(ocr_text) > len(best):
                 return ocr_text
-        except Exception as e:
-            if isinstance(e, (KeyboardInterrupt, SystemExit)):
-                raise
+        except (ImportError, OSError, ValueError, RuntimeError):
             pass
 
     return best
