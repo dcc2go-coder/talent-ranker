@@ -32,7 +32,7 @@ READ_CHUNK_SIZE = 1024 * 1024
 
 UPLOAD_DIR.mkdir(exist_ok=True)
 
-app = FastAPI(title="Talent Ranker", version="1.0.0")
+app = FastAPI(title="Talent Ranker", version="1.2.0")
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 # In-memory session store (sufficient for single-user / small-team local use)

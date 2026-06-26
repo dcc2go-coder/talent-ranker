@@ -1,0 +1,76 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+env.bak/
+venv.bak/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# ML / Data science specific
+# Models and large files
+*.pth
+*.pt
+*.h5
+*.onnx
+*.joblib
+*.pkl
+*.pickle
+models/
+checkpoints/
+saved_models/
+
+# Data
+data/
+raw_data/
+processed_data/
+*.csv
+*.parquet
+*.feather
+*.arrow
+
+# Logs and outputs
+logs/
+*.log
+outputs/
+results/
+
+# Jupyter Notebooks temporary
+.ipynb_checkpoints/
+*.ipynb
+
+# Build and cache
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# OS generated files
+.DS_Store
+
+# Local uploads (keep directory marker only)
+uploads/*
+!uploads/.gitkeep
+
+
+
+
+
+
